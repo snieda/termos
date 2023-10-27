@@ -29,20 +29,22 @@ EOM
 # system preparations
 # ----------------------------------------------------
 echo -------------------------------------------------------
-echo "Thomas Schneider / 2016 (refreshed 2022-10)"
+echo "Thomas Schneider / 2023"
 echo -------------------------------------------------------
 echo
 
 echo -------------------------------------------------------
 echo "System : $(uname -a)"
 echo "User   : $(id)"
+echo "Dir    : $(pwd)"
 echo -------------------------------------------------------
 echo
 ARCH=$(uname -m)
 $Os=$(uname -s)
 $os=${$(uname -s),,}
+$CC=$(pwd)
 
-read -ep "Installer (apt,pacman,pkg,apk,yum,yast,zypper): " -i "apt" PKG
+read -ep "Installer (apt,pacman,pkg,apk,dnf,yum,yast,zypper,snap,brew,port,scoop): " -i "apt" PKG
 
 if [ "$UID" == "0" ]; then # only on root priviledge
 	$PKG install sudo > /dev/null #on minimized systems no sudo is available - you have to be root to install it!
@@ -67,6 +69,8 @@ elif [ "$PKG" == "yast" ];then #SUSE (old)
 	INST="$SUDO $PKG --install $*"
 elif [ "$PKG" == "zypper" ];then #openSUSE
 	INST="$SUDO $PKG install --non-interactive --ignore-unknown --no-cd --auto-agree-with-licenses --allow-unsigned-rpm  $*"
+else
+  INST="$PKG install "
 fi
 
 read -ep "Package Install Command                        : " -i "$INST" INST
@@ -87,10 +91,29 @@ if [ "$INST_UPGRADE" != "n" ]; then
 fi
 
 echo "copying configurations"
-cp -r .profile .vimrc  .tmux.* .config .local .termux ~
+cp -r .bashrc .profile .vimrc  .tmux.* .config .local .termux $CC
 
 echo "install packages ..."
-for p in fzf fzy tmux mc tree broot archivemount locate ripgrep expect git gnupg neovim micro ne htop nethogs nmap netcat tcpdump curl wget tinyproxy xclip dos2unix poppler-utils docx2txt xlsx2csv xls2csv catdoc pandoc bat lesspipe ffmpeg fim cifs-utils openssl openssh openvpn sshfs colordiff icdiff grc tar rar p7zip ntp xcompmgr w3m w3m-img elinks links2 googler inotify-tools fzf fzy mupdf antiword  printer-driver-cups-pdf; do $INST $p ; done
+
+task_manager="htop"
+window_manager="tmux"
+file_manager="mc broot"
+file_search="fzy fzf tree locate ripgrep"
+file_compress="archivemount grc tar rar p7zip"
+file_tools="cifs-utils inotify-tools sshfs dos2unix poppler-utils"
+office="docx2txt xlsx2csv xls2csv catdoc pandoc mupdf antiword printer-driver-cups-pdf"
+editors="ne micro vim neovim"
+viewers="bat lesspipe ffmpeg fim colordiff icdiff"
+network="nethogs nmap netcat tcpdump curl wget tinyproxy openssl openssh openvpn"
+internet="w3m w3m-img elinks links2 googler"
+develop="git expect progress bar pv"
+communication="himalaya weechat poezio iamb"
+other="xclip gnupg xcompmgr ntp"
+
+unavailables=()
+for p in $task_manager $window_manager $file_manager $file_search $file_compress $file_tools $office \
+    $editors $viewers $network $internet $develop $communication $other ; do $INST $p || unavailables += ( $p ); done
+
 
 curl https://raw.githubusercontent.com/junegunn/fzf/master/shell/key-bindings.bash > shell/key-bindings.bash
 curl https://raw.githubusercontent.com/junegunn/fzf/master/shell/completion.bash > shell/completion.bash
@@ -104,7 +127,7 @@ curl https://www.gnu.org/software/bash/manual/bash.txt > bash.txt
 
 mkdir -p .local/share/fonts
 
-echo "python3"
+echo "nstalling python3 extensions"
 for i in python python-pip python3 python3-pip flake8 autopep8 pudb; do $INST $i; done
 for i in python-flake8 python-autopep8 python-pudb; do $INST $i; done #second try...
 pip install -U pip
@@ -115,10 +138,10 @@ if [ "$PKG" == "pkg" ]; then # mostly freenbsd
 fi
 
 echo "installing developer font 'fantasque sans mono' to be used by terminal or vim/devicons"
-curl -L https://github.com/belluzj/fantasque-sans/releases/download/v1.8.0/FantasqueSansMono-Normal.tar.gz | tar xzC ~/.local/share/fonts
+curl -L https://github.com/belluzj/fantasque-sans/releases/download/v1.8.0/FantasqueSansMono-Normal.tar.gz | tar xzC $CC/.local/share/fonts
 
-cd ~/.local/share/fonts && curl -fLo "Droid Sans Mono for Powerline Nerd Font Complete.otf" https://github.com/ryanoasis/nerd-fonts/raw/master/patched-fonts/DroidSansMono/complete/Droid%20Sans%20Mono%20Nerd%20Font%20Complete.otf
-cd ~
+cd $CC/.local/share/fonts && curl -fLo "Droid Sans Mono for Powerline Nerd Font Complete.otf" https://github.com/ryanoasis/nerd-fonts/raw/master/patched-fonts/DroidSansMono/complete/Droid%20Sans%20Mono%20Nerd%20Font%20Complete.otf
+cd $CC
 
 echo "installing Fuzzy Finder"
 wget -nc https://github.com/junegunn/fzf/raw/master/install
@@ -133,7 +156,7 @@ echo "additional cli tools"
 for i in progress autojump archivemount sshfs fzy locate apropos; do $INST $i; done
 
 echo "installing googler"
-curl https://raw.githubusercontent.com/jarun/googler/v4.2/googler -o ~/.local/bin/googler && chmod a+x ~/.local/bin/goolger
+curl https://raw.githubusercontent.com/jarun/googler/v4.2/googler -o $CC/.local/bin/googler && chmod a+x $CC/.local/bin/goolger
 
 curl https://www.benf.org/other/cfr/cfr-0.152.jar > .local/bin/cfr-0.152.jar
 if [ "$INST_NODEJS" != "n" ]; then
@@ -144,18 +167,24 @@ fi
 # user/project dependent installations
 # ----------------------------------------------------
 
-if [ ! -f ~/.ssh/id_rsa.pub ]; then 
+if [ ! -f $CC/.ssh/id_rsa.pub ]; then 
 	echo "prepare ssh key to be copied to server machines"
 	echo -e "\n\n\n" | ssh-keygen -t rsa
-	cat ~/.ssh/id_rsa.pub | xclip -sel clip
+	cat $CC/.ssh/id_rsa.pub | xclip -sel clip
 fi
 
 # reload profile
-cd
+cd $CC
 source .profile
+
+[[ ${#unavailables[@]} > 0 ]] && echo " couldn't install the following packages: ${unavailables[@]}"
 
 echo -------------------------------------------------------
 echo "Installation finished successfull"
 echo "Please have a look into your .profile"
-echo "Use 'br' as filemanager and micro, ne or vim as editor"
+echo "Use:"
+echo " - htop as taskmananger"
+echo " - br or mc as filemanager"
+echo " - micro, ne or vim/nvim as editor"
+echo " - lvim will provide a full IDE"
 echo -------------------------------------------------------
