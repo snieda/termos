@@ -40,9 +40,9 @@ echo "Dir    : $(pwd)"
 echo -------------------------------------------------------
 echo
 ARCH=$(uname -m)
-$Os=$(uname -s)
-$os=${$(uname -s),,}
-$CC=$(pwd)
+Os=$(uname -s)
+os=${Os,,}
+CC=$(pwd)
 
 read -ep "Installer (apt,pacman,pkg,apk,dnf,yum,yast,zypper,snap,brew,port,scoop): " -i "apt" PKG
 
@@ -90,12 +90,17 @@ if [ "$INST_UPGRADE" != "n" ]; then
 	$SUDO $PKG -y upgrade
 fi
 
-echo "copying configurations"
-cp -r .bashrc .profile .vimrc  .tmux.* .config .local .termux $CC
+mkdir -p .local/bin
+
+$INST git
+git clone https://github.com/snieda/termos.git .config/termos
+echo "copying termos configurations"
+cd .config/termos && cp -ru $(ls -A -I README.MD -I LICENSE -I .git) $CC
+cd $CC
 
 echo "install packages ..."
 
-task_manager="htop"
+system="sudo man htop"
 window_manager="tmux"
 file_manager="mc broot"
 file_search="fzy fzf tree locate ripgrep"
@@ -104,15 +109,15 @@ file_tools="cifs-utils inotify-tools sshfs dos2unix poppler-utils"
 office="docx2txt xlsx2csv xls2csv catdoc pandoc mupdf antiword printer-driver-cups-pdf"
 editors="ne micro vim neovim"
 viewers="bat lesspipe ffmpeg fim colordiff icdiff"
-network="nethogs nmap netcat tcpdump curl wget tinyproxy openssl openssh openvpn"
+network="nethogs nmap netcat ncat tcpdump curl wget tinyproxy openssl openssh openvpn"
 internet="w3m w3m-img elinks links2 googler"
 develop="git expect progress bar pv"
 communication="himalaya weechat poezio iamb"
 other="xclip gnupg xcompmgr ntp"
 
 unavailables=()
-for p in $task_manager $window_manager $file_manager $file_search $file_compress $file_tools $office \
-    $editors $viewers $network $internet $develop $communication $other ; do $INST $p || unavailables += ( $p ); done
+for p in $system $window_manager $file_manager $file_search $file_compress $file_tools $office \
+    $editors $viewers $network $internet $develop $communication $other ; do $INST $p || unavailables+=( $p ); done
 
 
 curl https://raw.githubusercontent.com/junegunn/fzf/master/shell/key-bindings.bash > shell/key-bindings.bash
@@ -143,6 +148,10 @@ curl -L https://github.com/belluzj/fantasque-sans/releases/download/v1.8.0/Fanta
 cd $CC/.local/share/fonts && curl -fLo "Droid Sans Mono for Powerline Nerd Font Complete.otf" https://github.com/ryanoasis/nerd-fonts/raw/master/patched-fonts/DroidSansMono/complete/Droid%20Sans%20Mono%20Nerd%20Font%20Complete.otf
 cd $CC
 
+echo "nnn filemanager with icons"
+curl https://github.com/jarun/nnn/releases/download/v4.2/nnn-nerd-static-4.2.x86_64.tar.gz  | tar xzC ~/bin
+curl https://github.com/Canop/broot/raw/master/resources/icons/vscode/vscode.ttf > ~/.local/share/fonts/vscode.ttf
+
 echo "installing Fuzzy Finder"
 wget -nc https://github.com/junegunn/fzf/raw/master/install
 mv install fzf-install.sh
@@ -151,9 +160,6 @@ echo "yes\nyes\nyes\n\n" | ./fzf-install.sh
 
 echo "installing micro editor"
 micro -plugin install aspell editorconfig filemanager fish fzf jump lsp  quickfix wc autoclose comment diff ftoptions linter literate status
-
-echo "additional cli tools"
-for i in progress autojump archivemount sshfs fzy locate apropos; do $INST $i; done
 
 echo "installing googler"
 curl https://raw.githubusercontent.com/jarun/googler/v4.2/googler -o $CC/.local/bin/googler && chmod a+x $CC/.local/bin/goolger
