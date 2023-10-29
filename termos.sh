@@ -44,6 +44,9 @@ Os=$(uname -s)
 os=${Os,,}
 CC=$(pwd)
 
+b=$(tput bold)
+n=$(tput sgr0)
+
 read -ep "Installer (apt,pacman,pkg,apk,dnf,yum,yast,zypper,snap,brew,port,scoop): " -i "apt" PKG
 
 if [ "$UID" == "0" ]; then # only on root priviledge
@@ -79,8 +82,10 @@ echo "============ System and VirtualBox informations ============"
 read -p  "System upgrade                           (Y|n) : " INST_UPGRADE
 echo     "================== development IDE+Tools ===================="
 read -p  "Install nodejs                           (Y|n) : " INST_NODEJS
-read -ep "Install python                         Version : " -i 2022.05 INST_PYTHON_ANACONDA
-read -p ">>>>>> !!! START INSTALLATION ? <<<<<<  (Y|n)  : " START
+read -ep "Install python-extensions     Anaconda Version : " -i 2022.05 INST_PYTHON_ANACONDA
+read -p  "Install rust                             (y|N) : " INST_RUST
+read -p  "Install go                               (y|N) : " INST_GO
+read -p  ">>>>>> !!! START INSTALLATION ? <<<<<<  (Y|n)  : " START
 if [ "$START" == "n" ]; then
 	exit
 fi
@@ -100,7 +105,7 @@ cd $CC
 
 echo "install packages ..."
 
-system="sudo man htop"
+system="sudo man htop ncurses-base"
 window_manager="tmux"
 file_manager="mc broot"
 file_search="fzy fzf tree locate ripgrep"
@@ -111,17 +116,16 @@ editors="ne micro vim neovim"
 viewers="bat lesspipe ffmpeg fim colordiff icdiff"
 network="nethogs nmap netcat ncat tcpdump curl wget tinyproxy openssl openssh openvpn"
 internet="w3m w3m-img elinks links2 googler"
-develop="git expect progress bar pv"
+develop="git expect progress bar pv gnupg"
 communication="himalaya weechat poezio iamb"
-other="xclip gnupg xcompmgr ntp"
+other="xclip xcompmgr ntp"
 
+# TODO: eval space with --no-download --assume-no
+# TODO: for loop printing space per package
 unavailables=()
 for p in $system $window_manager $file_manager $file_search $file_compress $file_tools $office \
     $editors $viewers $network $internet $develop $communication $other ; do $INST $p || unavailables+=( $p ); done
 
-
-curl https://raw.githubusercontent.com/junegunn/fzf/master/shell/key-bindings.bash > shell/key-bindings.bash
-curl https://raw.githubusercontent.com/junegunn/fzf/master/shell/completion.bash > shell/completion.bash
 echo "alias ll='ls -alF'" >> .profile
 
 # ----------------------------------------------------
@@ -132,7 +136,7 @@ curl https://www.gnu.org/software/bash/manual/bash.txt > bash.txt
 
 mkdir -p .local/share/fonts
 
-echo "nstalling python3 extensions"
+echo "installing python3 extensions"
 for i in python python-pip python3 python3-pip flake8 autopep8 pudb; do $INST $i; done
 for i in python-flake8 python-autopep8 python-pudb; do $INST $i; done #second try...
 pip install -U pip
@@ -148,18 +152,24 @@ curl -L https://github.com/belluzj/fantasque-sans/releases/download/v1.8.0/Fanta
 cd $CC/.local/share/fonts && curl -fLo "Droid Sans Mono for Powerline Nerd Font Complete.otf" https://github.com/ryanoasis/nerd-fonts/raw/master/patched-fonts/DroidSansMono/complete/Droid%20Sans%20Mono%20Nerd%20Font%20Complete.otf
 cd $CC
 
-echo "nnn filemanager with icons"
-curl https://github.com/jarun/nnn/releases/download/v4.2/nnn-nerd-static-4.2.x86_64.tar.gz  | tar xzC ~/bin
-curl https://github.com/Canop/broot/raw/master/resources/icons/vscode/vscode.ttf > ~/.local/share/fonts/vscode.ttf
+echo "broot and nnn filemanager with icons"
+curl https://github.com/jarun/nnn/releases/download/v4.2/nnn-nerd-static-4.2.x86_64.tar.gz  | tar xzC $CC/.local/bin
+curl https://dystroy.org/broot/download/$ARCH-$os/broot -o ~/bin/broot && chmod a+x $CC/.local/bin/broot
+curl https://github.com/Canop/broot/raw/master/resources/icons/vscode/vscode.ttf > $CC/.local/share/fonts/vscode.ttf
 
-echo "installing Fuzzy Finder"
-wget -nc https://github.com/junegunn/fzf/raw/master/install
-mv install fzf-install.sh
-chmod a+x fzf-install.sh
-echo "yes\nyes\nyes\n\n" | ./fzf-install.sh
+if [[ "$(which fzf)" == "" ]]; then
+  echo "installing Fuzzy Finder"
+  wget -nc https://github.com/junegunn/fzf/raw/master/install
+  mv install fzf-install.sh
+  chmod a+x fzf-install.sh
+  echo "yes\nyes\nyes\n\n" | ./fzf-install.sh
+  curl https://raw.githubusercontent.com/junegunn/fzf/master/shell/completion.bash > shell/completion.bash
+fi
 
-echo "installing micro editor"
-micro -plugin install aspell editorconfig filemanager fish fzf jump lsp  quickfix wc autoclose comment diff ftoptions linter literate status
+if [[ "$(which micro)" == "" ]]; then
+  echo "installing micro editor"
+  micro -plugin install aspell editorconfig filemanager fish fzf jump lsp  quickfix wc autoclose comment diff ftoptions linter literate status
+fi
 
 echo "installing googler"
 curl https://raw.githubusercontent.com/jarun/googler/v4.2/googler -o $CC/.local/bin/googler && chmod a+x $CC/.local/bin/goolger
@@ -167,6 +177,14 @@ curl https://raw.githubusercontent.com/jarun/googler/v4.2/googler -o $CC/.local/
 curl https://www.benf.org/other/cfr/cfr-0.152.jar > .local/bin/cfr-0.152.jar
 if [ "$INST_NODEJS" != "n" ]; then
 	$INST nodejs
+fi
+
+if [ "$INST_RUST" == "y" ]; then
+  curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+fi
+
+if [ "$INST_go" == "y" ]; then
+	$INST golang
 fi
 
 # ----------------------------------------------------
@@ -183,14 +201,18 @@ fi
 cd $CC
 source .profile
 
-[[ ${#unavailables[@]} > 0 ]] && echo " couldn't install the following packages: ${unavailables[@]}"
+[[ ${#unavailables[@]} > 0 ]] && echo "WARNING: couldn't install the following packages:\n\t${unavailables[@]}"
 
-echo -------------------------------------------------------
+echo "$b-------------------------------------------------------"
 echo "Installation finished successfull"
 echo "Please have a look into your .profile"
+echo "Input 'less bash.txt' to see shell help" 
 echo "Use:"
 echo " - htop as taskmananger"
+echo " - <Ctrl+g> to select favorite/previous folder"
+echo " - <Ctrl+h> to select command help"
+echo " - <Ctrl+t> select any file in current folder hierarchy"
 echo " - br or mc as filemanager"
 echo " - micro, ne or vim/nvim as editor"
 echo " - lvim will provide a full IDE"
-echo -------------------------------------------------------
+echo "-------------------------------------------------------$n"
