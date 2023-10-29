@@ -7,6 +7,17 @@ cat <<EOM
 # preconditions: linux (best: debian) or bsd system with package manager
 # annotation   : on FreeBSD the bash is on: /usr/local/bin/bash
 # tested on    : ubuntu, ghostbsd(freebsd), termux, msys2
+#
+# usage (on new system):
+#  - apt update
+#  - apt install sudo
+#  - adduser <username>
+#  - adduser <username> sudo
+#  - login <username>
+#  - sudo apt install wget
+#  - wget https://raw.githubusercontent.com/snieda/termos/main/termos.sh
+#  - chmod +x termos.sh
+#  - ./termos.sh
 ##############################################################################
 
 
@@ -76,16 +87,36 @@ else
   INST="$PKG install "
 fi
 
+system="sudo man htop ncurses-base ncurses-bin"
+window_manager="tmux"
+file_manager="mc broot"
+file_search="fzy fzf tree locate ripgrep"
+file_compress="archivemount grc tar rar p7zip"
+file_tools="cifs-utils inotify-tools sshfs dos2unix poppler-utils"
+office="docx2txt xlsx2csv xls2csv catdoc pandoc mupdf antiword printer-driver-cups-pdf"
+editors="ne micro vim neovim"
+viewers="bat lesspipe ffmpeg fim colordiff icdiff"
+network="nethogs nmap netcat ncat tcpdump curl wget tinyproxy openssl openssh openvpn"
+internet="w3m w3m-img elinks links2 googler"
+develop="git expect progress bar pv gnupg"
+communication="himalaya weechat poezio iamb"
+other="xclip xcompmgr ntp"
+
 read -ep "Package Install Command                        : " -i "$INST" INST
 echo "============ System and VirtualBox informations ============"
 
 read -p  "System upgrade                           (Y|n) : " INST_UPGRADE
 echo     "================== development IDE+Tools ===================="
 read -p  "Install nodejs                           (Y|n) : " INST_NODEJS
-read -ep "Install python-extensions     Anaconda Version : " -i 2022.05 INST_PYTHON_ANACONDA
+read -p  "Install python-extensions                (Y|n) : " INST_PYTHON_EXT
 read -p  "Install rust                             (y|N) : " INST_RUST
 read -p  "Install go                               (y|N) : " INST_GO
+
+SHOW_DISK_SPACE="$INST --no-download --assume-no --fix-missing"
+echo "$($SHOW_DISK_SPACE $system $window_manager $file_manager $file_search $file_compress $file_tools $office \
+    $editors $viewers $network $internet $develop $communication $other | grep "disk space")"
 read -p  ">>>>>> !!! START INSTALLATION ? <<<<<<  (Y|n)  : " START
+
 if [ "$START" == "n" ]; then
 	exit
 fi
@@ -105,26 +136,14 @@ cd $CC
 
 echo "install packages ..."
 
-system="sudo man htop ncurses-base"
-window_manager="tmux"
-file_manager="mc broot"
-file_search="fzy fzf tree locate ripgrep"
-file_compress="archivemount grc tar rar p7zip"
-file_tools="cifs-utils inotify-tools sshfs dos2unix poppler-utils"
-office="docx2txt xlsx2csv xls2csv catdoc pandoc mupdf antiword printer-driver-cups-pdf"
-editors="ne micro vim neovim"
-viewers="bat lesspipe ffmpeg fim colordiff icdiff"
-network="nethogs nmap netcat ncat tcpdump curl wget tinyproxy openssl openssh openvpn"
-internet="w3m w3m-img elinks links2 googler"
-develop="git expect progress bar pv gnupg"
-communication="himalaya weechat poezio iamb"
-other="xclip xcompmgr ntp"
-
-# TODO: eval space with --no-download --assume-no
+# TODO: eval space with --no-download --assume-no --fix-missing
 # TODO: for loop printing space per package
 unavailables=()
 for p in $system $window_manager $file_manager $file_search $file_compress $file_tools $office \
     $editors $viewers $network $internet $develop $communication $other ; do $INST $p || unavailables+=( $p ); done
+
+b=$(tput bold)
+n=$(tput sgr0)
 
 echo "alias ll='ls -alF'" >> .profile
 
@@ -136,11 +155,13 @@ curl https://www.gnu.org/software/bash/manual/bash.txt > bash.txt
 
 mkdir -p .local/share/fonts
 
-echo "installing python3 extensions"
-for i in python python-pip python3 python3-pip flake8 autopep8 pudb; do $INST $i; done
-for i in python-flake8 python-autopep8 python-pudb; do $INST $i; done #second try...
-pip install -U pip
-pip install flake8 autopep8 pudb # on some distributions, it may be available on pip
+if [[ "$INST_PYTHON_EXT" != "n" ]]; then
+  echo "installing python3 extensions"
+  for i in python python-pip python3 python3-pip flake8 autopep8 pudb; do $INST $i; done
+  for i in python-flake8 python-autopep8 python-pudb; do $INST $i; done #second try...
+  pip install -U pip
+  pip install flake8 autopep8 pudb # on some distributions, it may be available on pip
+fi
 
 if [ "$PKG" == "pkg" ]; then # mostly freenbsd
 	for i in py37-pip; do $INST $i; done
@@ -201,7 +222,7 @@ fi
 cd $CC
 source .profile
 
-[[ ${#unavailables[@]} > 0 ]] && echo "WARNING: couldn't install the following packages:\n\t${unavailables[@]}"
+[[ ${#unavailables[@]} > 0 ]] && echo "\nWARNING: couldn't install the following packages:\n\t${unavailables[@]}"
 
 echo "$b-------------------------------------------------------"
 echo "Installation finished successfull"
