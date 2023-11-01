@@ -98,7 +98,7 @@ editors="ne micro vim neovim"
 viewers="bat lesspipe ffmpeg fim colordiff icdiff"
 network="nethogs nmap netcat ncat tcpdump curl wget tinyproxy openssl openssh openvpn"
 internet="w3m w3m-img elinks links2 googler"
-develop="git podman expect progress bar pv gnupg"
+develop="git lazygit podman expect progress bar pv gnupg"
 languages="nodejs rust golang"
 communication="himalaya weechat poezio iamb"
 other="xclip xcompmgr ntp"
@@ -146,7 +146,6 @@ echo "copying termos configurations"
 cd .config/termos && cp -ru $(ls -A -I README.MD -I LICENSE -I .git) $CC
 cd $CC
 
-echo "install packages ..."
 
 for p in $system $window_manager $file_manager $file_search $file_compress $file_tools $office \
     $editors $viewers $network $internet $develop $communication $other ; do $INST $p || unavailables+=( $p ); done
@@ -205,9 +204,6 @@ echo "installing googler"
 curl https://raw.githubusercontent.com/jarun/googler/v4.2/googler -o $CC/.local/bin/googler && chmod a+x $CC/.local/bin/goolger
 
 curl https://www.benf.org/other/cfr/cfr-0.152.jar > .local/bin/cfr-0.152.jar
-if [ "$INST_NODEJS" != "n" ]; then
-	$INST nodejs
-fi
 
 if [ "$languages" ~= "rust" ]; then
   curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
@@ -221,6 +217,11 @@ if [ ! -f $CC/.ssh/id_rsa.pub ]; then
 	echo "prepare ssh key to be copied to server machines"
 	echo -e "\n\n\n" | ssh-keygen -t rsa
 	cat $CC/.ssh/id_rsa.pub | xclip -sel clip
+fi
+
+if [ "which lvim" == "" ]; then
+  echo "install lunarvim"
+  LV_BRANCH='release-1.3/neovim-0.9' bash <(curl -s https://raw.githubusercontent.com/LunarVim/LunarVim/release-1.3/neovim-0.9/utils/installer/install.sh)
 fi
 
 # reload profile
