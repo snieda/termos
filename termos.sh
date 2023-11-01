@@ -108,7 +108,7 @@ all=($system $window_manager $file_manager $file_search $file_compress $file_too
 
 read -ep "Package Install Command  : " -i "$INST" INST
 read -p  "System upgrade     (Y|n) : " INST_UPGRADE
-read -ep "Install languages  (Y|n) : " -i "$languages" languages
+read -ep "Install languages        : " -i "$languages" languages
 read -p  "Install python-ext (Y|n) : " INST_PYTHON_EXT
 read -p  "Check Package sizes(y|N) : " CHECK_PACKAGE_SIZES
 
@@ -232,6 +232,7 @@ source .profile
 echo "$b-------------------------------------------------------"
 echo "Installation finished successfull"
 echo "Please have a look into your .profile"
+echo "and source it with: source .profile"
 echo "Input 'less bash.txt' to see shell help" 
 echo "Use:"
 echo " - htop as taskmananger"
