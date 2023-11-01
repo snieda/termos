@@ -99,29 +99,33 @@ viewers="bat lesspipe ffmpeg fim colordiff icdiff"
 network="nethogs nmap netcat ncat tcpdump curl wget tinyproxy openssl openssh openvpn"
 internet="w3m w3m-img elinks links2 googler"
 develop="git podman expect progress bar pv gnupg"
-languages="nodejs rust go"
+languages="nodejs rust golang"
 communication="himalaya weechat poezio iamb"
 other="xclip xcompmgr ntp"
 
 all=($system $window_manager $file_manager $file_search $file_compress $file_tools $office \
     $editors $viewers $network $internet $develop $languages $communication $other )
 
-read -ep "Package Install Command : " -i "$INST" INST
-read -p  "System upgrade    (Y|n) : " INST_UPGRADE
-read -ep "Install languages (Y|n) : " -i "$languages" languages
-read -p  "Install python-ext(Y|n) : " INST_PYTHON_EXT
+read -ep "Package Install Command  : " -i "$INST" INST
+read -p  "System upgrade     (Y|n) : " INST_UPGRADE
+read -ep "Install languages  (Y|n) : " -i "$languages" languages
+read -p  "Install python-ext (Y|n) : " INST_PYTHON_EXT
+read -p  "Check Package sizes(y|N) : " CHECK_PACKAGE_SIZES
 
 echo "${all[@]}"
-echo "checking ${#all[@]} packages..."
-SHOW_DISK_SPACE="$PKG show "
-unavailables=()
-for i in ${!all[@]} ; do $SHOW_DISK_SPACE ${all[i]} &>/dev/null && printf "${all[i]}:OK " || { unavailables+=( ${all[i]} ) ; printf "${all[i]}:ERROR "; } ; done
-#for i in ${!unavailables[@]}; do ${all[@]/${unavailabes[i]}} ; done
-echo "available  : ${all[@]}"
-echo "unavailable: ${unavailables[@]}"
 
-echo "show disk space"
-$SHOW_DISK_SPACE ${all[@]} | grep -E "Package:|Installed-Size:"
+unavailables=()
+if [ "$CHECK_PACKAGE_SIZES" == "y" ]; then
+	echo "checking ${#all[@]} packages..."
+	SHOW_DISK_SPACE="$PKG show "
+	for i in ${!all[@]} ; do $SHOW_DISK_SPACE ${all[i]} &>/dev/null && printf "${all[i]}:OK " || { unavailables+=( ${all[i]} ) ; printf "${all[i]}:ERROR "; } ; done
+	#for i in ${!unavailables[@]}; do ${all[@]/${unavailabes[i]}} ; done
+	echo "available  : ${all[@]}"
+	echo "unavailable: ${unavailables[@]}"
+
+	echo "show disk space"
+	$SHOW_DISK_SPACE ${all[@]} | grep -E "Package:|Installed-Size:"
+fi
 
 read -p  ">>>>>> !!! START INSTALLATION ? <<<<<<  (Y|n)  : " START
 
@@ -205,12 +209,8 @@ if [ "$INST_NODEJS" != "n" ]; then
 	$INST nodejs
 fi
 
-if [ "$INST_RUST" == "y" ]; then
+if [ "$languages" ~= "rust" ]; then
   curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-fi
-
-if [ "$INST_go" == "y" ]; then
-	$INST golang
 fi
 
 # ----------------------------------------------------
