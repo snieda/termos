@@ -58,7 +58,7 @@ CC=$(pwd)
 b=$(tput bold)
 n=$(tput sgr0)
 
-read -ep "Installer (apt,pacman,pkg,apk,dnf,yum,yast,zypper,snap,brew,port,scoop): " -i "apt" PKG
+read -ep "Installer (apt,pacman,pkg,apk,dnf,yum,yast,zypper,snap,brew,port,scoop,apt-cyg): " -i "apt" PKG
 
 if [ "$UID" == "0" ]; then # only on root priviledge
 	$PKG install sudo > /dev/null #on minimized systems no sudo is available - you have to be root to install it!
@@ -98,23 +98,31 @@ editors="ne micro vim neovim"
 viewers="bat lesspipe ffmpeg fim colordiff icdiff"
 network="nethogs nmap netcat ncat tcpdump curl wget tinyproxy openssl openssh openvpn"
 internet="w3m w3m-img elinks links2 googler"
-develop="git expect progress bar pv gnupg"
+develop="git podman expect progress bar pv gnupg"
+languages="nodejs rust go"
 communication="himalaya weechat poezio iamb"
 other="xclip xcompmgr ntp"
 
-read -ep "Package Install Command                        : " -i "$INST" INST
-echo "============ System and VirtualBox informations ============"
+all=($system $window_manager $file_manager $file_search $file_compress $file_tools $office \
+    $editors $viewers $network $internet $develop $languages $communication $other )
 
-read -p  "System upgrade                           (Y|n) : " INST_UPGRADE
-echo     "================== development IDE+Tools ===================="
-read -p  "Install nodejs                           (Y|n) : " INST_NODEJS
-read -p  "Install python-extensions                (Y|n) : " INST_PYTHON_EXT
-read -p  "Install rust                             (y|N) : " INST_RUST
-read -p  "Install go                               (y|N) : " INST_GO
+read -ep "Package Install Command : " -i "$INST" INST
+read -p  "System upgrade    (Y|n) : " INST_UPGRADE
+read -ep "Install languages (Y|n) : " -i "$languages" languages
+read -p  "Install python-ext(Y|n) : " INST_PYTHON_EXT
 
-SHOW_DISK_SPACE="$INST --no-download --assume-no --fix-missing"
-echo "$($SHOW_DISK_SPACE $system $window_manager $file_manager $file_search $file_compress $file_tools $office \
-    $editors $viewers $network $internet $develop $communication $other | grep "disk space")"
+echo "${all[@]}"
+echo "checking ${#all[@]} packages..."
+SHOW_DISK_SPACE="$PKG show "
+unavailables=()
+for i in ${!all[@]} ; do $SHOW_DISK_SPACE ${all[i]} &>/dev/null && printf "${all[i]}:OK " || { unavailables+=( ${all[i]} ) ; printf "${all[i]}:ERROR "; } ; done
+#for i in ${!unavailables[@]}; do ${all[@]/${unavailabes[i]}} ; done
+echo "available  : ${all[@]}"
+echo "unavailable: ${unavailables[@]}"
+
+echo "show disk space"
+$SHOW_DISK_SPACE ${all[@]} | grep -E "Package:|Installed-Size:"
+
 read -p  ">>>>>> !!! START INSTALLATION ? <<<<<<  (Y|n)  : " START
 
 if [ "$START" == "n" ]; then
@@ -136,9 +144,6 @@ cd $CC
 
 echo "install packages ..."
 
-# TODO: eval space with --no-download --assume-no --fix-missing
-# TODO: for loop printing space per package
-unavailables=()
 for p in $system $window_manager $file_manager $file_search $file_compress $file_tools $office \
     $editors $viewers $network $internet $develop $communication $other ; do $INST $p || unavailables+=( $p ); done
 
