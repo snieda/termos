@@ -68,7 +68,7 @@ export PAGER=bat
 
 source $MVND_HOME/bin/mvnd-bash-completion.bash
 
-PATH="$MVND_HOME/bin:~/bin:/home/ts/.local/bin:$JAVA_HOME/bin:$JDTLS_HOME/bin:/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin"
+PATH="$MVND_HOME/bin:$JAVA_HOME/bin:$JDTLS_HOME/bin:/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin"
 export PATH="$HOME/.cargo/bin:$PATH"
 
 # eclipse requests this variable
