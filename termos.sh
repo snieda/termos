@@ -87,7 +87,7 @@ else
   INST="$PKG install "
 fi
 
-system="sudo man htop ncurses-base ncurses-bin"
+system="sudo man htop ncurses-base ncurses-bin software-properties-common"
 window_manager="tmux"
 file_manager="mc broot"
 file_search="fzy fzf tree locate ripgrep"
@@ -132,6 +132,13 @@ read -p  ">>>>>> !!! START INSTALLATION ? <<<<<<  (Y|n)  : " START
 if [ "$START" == "n" ]; then
 	exit
 fi
+
+if [ "$PKG" == "apt" ]; then
+echo "add repositories for neovim"
+  $INST software-properties-common
+  sudo add-apt-repository ppa:neovim-ppa/stable
+fi
+
 echo "do some updates..."
 $SUDO $PKG update
 if [ "$INST_UPGRADE" != "n" ]; then
@@ -220,6 +227,10 @@ if [ ! -f $CC/.ssh/id_rsa.pub ]; then
 fi
 
 if [ "which lvim" == "" ]; then
+  if [ $(echo "$(nvim -v | sed -nE 's/.* v([0-9]+\.[0-9]+).*/\1/p') < 0.9" | bc -l) -eq 1 ]; then
+    wget https://github.com/neovim/neovim/releases/latest/download/nvim-linux64.tar.gz | tar -xfv -C $CC/.local/bin
+    cp $CC/.local/bin/nvim*/bin/nvim $CC/.local/bin
+  if
   echo "install lunarvim"
   LV_BRANCH='release-1.3/neovim-0.9' bash <(curl -s https://raw.githubusercontent.com/LunarVim/LunarVim/release-1.3/neovim-0.9/utils/installer/install.sh)
 fi

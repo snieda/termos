@@ -75,7 +75,7 @@ export PATH="$HOME/.cargo/bin:$PATH"
 
 CDPATH=.:/workspace
 
-source bin/smartcd.sh
+source ~/.local/bin/smartcd.sh
 
 ### MANAGED BY RANCHER DESKTOP START (DO NOT EDIT)
 export PATH="~/.rd/bin:$PATH"
