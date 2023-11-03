@@ -214,7 +214,7 @@ curl https://raw.githubusercontent.com/jarun/googler/v4.2/googler -o $CC/.local/
 
 curl https://www.benf.org/other/cfr/cfr-0.152.jar > $CC/.local/bin/cfr-0.152.jar
 
-if [ "$languages" ~= "rust" ]; then
+if [ "$languages" == *"rust"* ]; then
   curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 fi
 
@@ -228,7 +228,7 @@ if [ ! -f $CC/.ssh/id_rsa.pub ]; then
 	cat $CC/.ssh/id_rsa.pub | xclip -sel clip
 fi
 
-if [ "which lvim" == "" ]; then
+if [ "$(which lvim)" == "" ]; then
   if [ $(echo "$(nvim -v | sed -nE 's/.* v([0-9]+\.[0-9]+).*/\1/p') < 0.9" | bc -l) -eq 1 ]; then
     wget https://github.com/neovim/neovim/releases/latest/download/nvim-linux64.tar.gz | tar -xfv -C $CC/.local/bin
     cp $CC/.local/bin/nvim*/bin/nvim $CC/.local/bin
@@ -255,5 +255,7 @@ echo " - <Ctrl+h> to select command help"
 echo " - <Ctrl+t> select any file in current folder hierarchy"
 echo " - br or mc as filemanager"
 echo " - micro, ne or vim/nvim as editor"
+echo " - googler to search in internet"
+echo " - w3m, links2 or elinks as browser"
 echo " - lvim will provide a full IDE"
 echo "-------------------------------------------------------$n"
