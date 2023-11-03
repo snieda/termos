@@ -98,7 +98,7 @@ editors="ne micro vim neovim"
 viewers="bat lesspipe ffmpeg fim colordiff icdiff"
 network="nethogs nmap netcat ncat tcpdump curl wget tinyproxy openssl openssh openvpn"
 internet="w3m w3m-img elinks links2 googler"
-develop="git lazygit podman expect progress bar pv gnupg"
+develop="git lazygit podman expect autoexpect progress bar pv gnupg"
 languages="nodejs rust golang"
 communication="himalaya weechat poezio iamb"
 other="xclip xcompmgr ntp"
@@ -190,16 +190,18 @@ cd $CC
 
 echo "broot and nnn filemanager with icons"
 curl https://github.com/jarun/nnn/releases/download/v4.2/nnn-nerd-static-4.2.x86_64.tar.gz  | tar xzC $CC/.local/bin
-curl https://dystroy.org/broot/download/$ARCH-$os/broot -o ~/bin/broot && chmod a+x $CC/.local/bin/broot
+curl https://dystroy.org/broot/download/$ARCH-$os/broot -o $CC/.local/bin/broot && chmod a+x $CC/.local/bin/broot
 curl https://github.com/Canop/broot/raw/master/resources/icons/vscode/vscode.ttf > $CC/.local/share/fonts/vscode.ttf
 
-if [[ "$(which fzf)" == "" ]]; then
+if [[ ! -f "$CC/shell/completion.bash" ]]; then
   echo "installing Fuzzy Finder"
   wget -nc https://github.com/junegunn/fzf/raw/master/install
-  mv install fzf-install.sh
+  mv install fzf-install.sh
   chmod a+x fzf-install.sh
   echo "yes\nyes\nyes\n\n" | ./fzf-install.sh
-  curl https://raw.githubusercontent.com/junegunn/fzf/master/shell/completion.bash > shell/completion.bash
+  mkdir $CC/shell
+  curl https://raw.githubusercontent.com/junegunn/fzf/master/shell/key-bindings.bash > $CC/shell/key-bindings.bash
+  curl https://raw.githubusercontent.com/junegunn/fzf/master/shell/completion.bash > $CC/shell/completion.bash
 fi
 
 if [[ "$(which micro)" == "" ]]; then
@@ -210,7 +212,7 @@ fi
 echo "installing googler"
 curl https://raw.githubusercontent.com/jarun/googler/v4.2/googler -o $CC/.local/bin/googler && chmod a+x $CC/.local/bin/goolger
 
-curl https://www.benf.org/other/cfr/cfr-0.152.jar > .local/bin/cfr-0.152.jar
+curl https://www.benf.org/other/cfr/cfr-0.152.jar > $CC/.local/bin/cfr-0.152.jar
 
 if [ "$languages" ~= "rust" ]; then
   curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
