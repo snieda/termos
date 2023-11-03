@@ -230,7 +230,7 @@ if [ "which lvim" == "" ]; then
   if [ $(echo "$(nvim -v | sed -nE 's/.* v([0-9]+\.[0-9]+).*/\1/p') < 0.9" | bc -l) -eq 1 ]; then
     wget https://github.com/neovim/neovim/releases/latest/download/nvim-linux64.tar.gz | tar -xfv -C $CC/.local/bin
     cp $CC/.local/bin/nvim*/bin/nvim $CC/.local/bin
-  if
+  fi
   echo "install lunarvim"
   LV_BRANCH='release-1.3/neovim-0.9' bash <(curl -s https://raw.githubusercontent.com/LunarVim/LunarVim/release-1.3/neovim-0.9/utils/installer/install.sh)
 fi
