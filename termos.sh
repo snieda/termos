@@ -55,6 +55,7 @@ Os=$(uname -s)
 os=${Os,,}
 CC=$(pwd)
 
+START_TIME=$(date)
 b=$(tput bold)
 n=$(tput sgr0)
 
@@ -99,7 +100,7 @@ viewers="bat lesspipe ffmpeg fim colordiff icdiff"
 network="nethogs nmap netcat ncat tcpdump curl wget tinyproxy openssl openssh openvpn"
 internet="w3m w3m-img elinks links2 googler"
 develop="git lazygit podman expect autoexpect progress bar pv gnupg jq"
-languages="nodejs rust golang"
+languages="nodejs cargo openjdk-17-jdk maven golang-go"
 communication="himalaya weechat poezio iamb"
 other="xclip xcompmgr ntp"
 
@@ -214,7 +215,7 @@ curl https://raw.githubusercontent.com/jarun/googler/v4.2/googler -o $CC/.local/
 
 curl https://www.benf.org/other/cfr/cfr-0.152.jar > $CC/.local/bin/cfr-0.152.jar
 
-if [ "$languages" == *"rust"* ]; then
+if [[ "$languages" == *"rust"* || "$languages" == *"cargo"* ]]; then
   curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 fi
 
@@ -230,8 +231,8 @@ fi
 
 if [ "$(which lvim)" == "" ]; then
   if [ $(echo "$(nvim -v | sed -nE 's/.* v([0-9]+\.[0-9]+).*/\1/p') < 0.9" | bc -l) -eq 1 ]; then
-    wget https://github.com/neovim/neovim/releases/latest/download/nvim-linux64.tar.gz | tar -xfv -C $CC/.local/bin
-    cp $CC/.local/bin/nvim*/bin/nvim $CC/.local/bin
+    curl -sL https://github.com/neovim/neovim/releases/latest/download/nvim-linux64.tar.gz | tar xzfv - -C $CC/.local/bin
+    ln -s $CC/.local/bin/nvim-linux64/bin/nvim $CC/.local/bin/nvim
   fi
   echo "install lunarvim"
   LV_BRANCH='release-1.3/neovim-0.9' bash <(curl -s https://raw.githubusercontent.com/LunarVim/LunarVim/release-1.3/neovim-0.9/utils/installer/install.sh)
@@ -243,8 +244,8 @@ source .profile
 
 [[ ${#unavailables[@]} > 0 ]] && echo "\nWARNING: couldn't install the following packages:\n\t${unavailables[@]}"
 
-echo "$b-------------------------------------------------------"
-echo "Installation finished successfull"
+echo "$b----------------------------------------------------------------------"
+echo "$(date) - Installation finished successfull (started at: $START_TIME)"
 echo "Please have a look into your .profile"
 echo "and source it with: source .profile"
 echo "Input 'less bash.txt' to see shell help" 
@@ -258,4 +259,4 @@ echo " - micro, ne or vim/nvim as editor"
 echo " - googler to search in internet"
 echo " - w3m, links2 or elinks as browser"
 echo " - lvim will provide a full IDE"
-echo "-------------------------------------------------------$n"
+echo "-----------------------------------------------------------------------$n"
