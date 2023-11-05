@@ -87,7 +87,7 @@ else
   INST="$PKG install "
 fi
 
-system="sudo man htop ncurses-base ncurses-bin software-properties-common"
+system="sudo man htop ncurses-base ncurses-bin software-properties-common make fuse"
 window_manager="tmux"
 file_manager="mc broot"
 file_search="fzy fzf tree locate ripgrep"
@@ -98,7 +98,7 @@ editors="ne micro vim neovim"
 viewers="bat lesspipe ffmpeg fim colordiff icdiff"
 network="nethogs nmap netcat ncat tcpdump curl wget tinyproxy openssl openssh openvpn"
 internet="w3m w3m-img elinks links2 googler"
-develop="git lazygit podman expect autoexpect progress bar pv gnupg"
+develop="git lazygit podman expect autoexpect progress bar pv gnupg jq"
 languages="nodejs rust golang"
 communication="himalaya weechat poezio iamb"
 other="xclip xcompmgr ntp"
