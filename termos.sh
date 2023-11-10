@@ -8,7 +8,7 @@ cat <<EOM
 # annotation   : on FreeBSD the bash is on: /usr/local/bin/bash
 # tested on    : ubuntu, ghostbsd(freebsd), termux, msys2
 #
-# usage (on new system):
+# usage (on new system, e.g: docker run -it --rm bitnami/minideb):
 #  - apt update
 #  - apt install sudo
 #  - adduser <username>
@@ -18,6 +18,11 @@ cat <<EOM
 #  - wget https://raw.githubusercontent.com/snieda/termos/main/termos.sh
 #  - chmod +x termos.sh
 #  - ./termos.sh
+#
+#  or as one-liner:
+#
+#  apt update; apt install -y sudo; devu=test && adduser --gecos "" --disabled-password $devu && chpasswd <<<"$devu:$devu" && adduser $devu sudo &&  su $devu -c "sudo -S apt install -y wget <<<$devu && cd /home/$devu && wget https://raw.githubusercontent.com/snieda/termos/main/termos.sh && . termos.sh"
+#
 ##############################################################################
 
 
