@@ -65,7 +65,7 @@ START_TIME=$(date)
 b=$(tput bold)
 n=$(tput sgr0)
 
-read -ep "Installer (apt,pacman,pkg,apk,dnf,yum,yast,zypper,snap,brew,port,scoop,apt-cyg): " -i "apt" PKG
+read -ep "Installer [apt,pacman,pkg,apk,dnf,yum,yast,zypper,snap,brew,port,scoop,apt-cyg]: " -i "apt" PKG
 
 if [ "$UID" == "0" ]; then # only on root priviledge
 	$PKG install sudo > /dev/null #on minimized systems no sudo is available - you have to be root to install it!
@@ -267,6 +267,6 @@ echo " - <Ctrl+t> select any file in current folder hierarchy"
 echo " - br or mc as filemanager"
 echo " - micro, ne or vim/nvim as editor"
 echo " - googler to search in internet"
-echo " - w3m, links2 or elinks as browser"
+echo " - carbonyl, w3m, links2 or elinks as browser"
 echo " - lvim will provide a full IDE"
 echo "-----------------------------------------------------------------------$n"
