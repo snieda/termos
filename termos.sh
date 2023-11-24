@@ -56,6 +56,7 @@ echo "Dir    : $(pwd)"
 echo -------------------------------------------------------
 echo
 ARCH=$(uname -m)
+ARCH2="${ARCH/_//} 
 Os=$(uname -s)
 os=${Os,,}
 CC=$(pwd)
@@ -97,7 +98,7 @@ system="sudo man htop ncurses-base ncurses-bin software-properties-common make f
 window_manager="tmux"
 file_manager="mc broot"
 file_search="fzy fzf tree locate ripgrep"
-file_compress="archivemount grc tar rar p7zip"
+file_compress="archivemount grc tar rar bsdtar p7zip"
 file_tools="cifs-utils inotify-tools sshfs dos2unix poppler-utils"
 office="docx2txt xlsx2csv xls2csv catdoc pandoc mupdf antiword printer-driver-cups-pdf"
 editors="ne micro vim neovim"
@@ -195,7 +196,7 @@ cd $CC/.local/share/fonts && curl -fLo "Droid Sans Mono for Powerline Nerd Font 
 cd $CC
 
 echo "broot and nnn filemanager with icons"
-curl https://github.com/jarun/nnn/releases/download/v4.2/nnn-nerd-static-4.2.x86_64.tar.gz  | tar xzC $CC/.local/bin
+curl https://github.com/jarun/nnn/releases/download/v4.2/nnn-nerd-static-4.2.$ARCH.tar.gz  | tar xzC $CC/.local/bin
 curl https://dystroy.org/broot/download/$ARCH-$os/broot -o $CC/.local/bin/broot && chmod a+x $CC/.local/bin/broot
 curl https://github.com/Canop/broot/raw/master/resources/icons/vscode/vscode.ttf > $CC/.local/share/fonts/vscode.ttf
 
@@ -217,6 +218,10 @@ fi
 
 echo "installing googler"
 curl https://raw.githubusercontent.com/jarun/googler/v4.2/googler -o $CC/.local/bin/googler && chmod a+x $CC/.local/bin/goolger
+
+echo "installing carbonyl terminal chromium browser"
+curl -L https://github.com/fathyb/carbonyl/releases/download/v0.0.3/carbonyl.$os-amd64.zip | bsdtar -xvf - -C $CC
+chmod +x $CC/carbonyl-0.0.3/carbonyl
 
 curl https://www.benf.org/other/cfr/cfr-0.152.jar > $CC/.local/bin/cfr-0.152.jar
 
