@@ -56,7 +56,6 @@ echo "Dir    : $(pwd)"
 echo -------------------------------------------------------
 echo
 ARCH=$(uname -m)
-ARCH2="${ARCH/_//} 
 Os=$(uname -s)
 os=${Os,,}
 CC=$(pwd)
@@ -98,7 +97,7 @@ system="sudo man htop ncurses-base ncurses-bin software-properties-common make f
 window_manager="tmux"
 file_manager="mc broot"
 file_search="fzy fzf tree locate ripgrep"
-file_compress="archivemount grc tar rar bsdtar p7zip"
+file_compress="archivemount grc tar rar bsdtar p7zip libarchive-tools"
 file_tools="cifs-utils inotify-tools sshfs dos2unix poppler-utils"
 office="docx2txt xlsx2csv xls2csv catdoc pandoc mupdf antiword printer-driver-cups-pdf"
 editors="ne micro vim neovim"
@@ -173,7 +172,7 @@ echo "alias ll='ls -alF'" >> .profile
 # additional terminal tools
 # ----------------------------------------------------
 
-curl https://www.gnu.org/software/bash/manual/bash.txt > bash.txt
+curl -L https://www.gnu.org/software/bash/manual/bash.txt > bash.txt
 
 mkdir -p .local/share/fonts
 
@@ -196,9 +195,9 @@ cd $CC/.local/share/fonts && curl -fLo "Droid Sans Mono for Powerline Nerd Font 
 cd $CC
 
 echo "broot and nnn filemanager with icons"
-curl https://github.com/jarun/nnn/releases/download/v4.2/nnn-nerd-static-4.2.$ARCH.tar.gz  | tar xzC $CC/.local/bin
-curl https://dystroy.org/broot/download/$ARCH-$os/broot -o $CC/.local/bin/broot && chmod a+x $CC/.local/bin/broot
-curl https://github.com/Canop/broot/raw/master/resources/icons/vscode/vscode.ttf > $CC/.local/share/fonts/vscode.ttf
+curl -L https://github.com/jarun/nnn/releases/download/v4.2/nnn-nerd-static-4.2.$ARCH.tar.gz  | tar xzC $CC/.local/bin
+curl -L https://dystroy.org/broot/download/$ARCH-$os/broot -o $CC/.local/bin/broot && chmod a+x $CC/.local/bin/broot
+curl -L https://github.com/Canop/broot/raw/master/resources/icons/vscode/vscode.ttf > $CC/.local/share/fonts/vscode.ttf
 
 if [[ ! -f "$CC/shell/completion.bash" ]]; then
   echo "installing Fuzzy Finder"
@@ -207,8 +206,8 @@ if [[ ! -f "$CC/shell/completion.bash" ]]; then
   chmod a+x fzf-install.sh
   echo "yes\nyes\nyes\n\n" | ./fzf-install.sh
   mkdir $CC/shell
-  curl https://raw.githubusercontent.com/junegunn/fzf/master/shell/key-bindings.bash > $CC/shell/key-bindings.bash
-  curl https://raw.githubusercontent.com/junegunn/fzf/master/shell/completion.bash > $CC/shell/completion.bash
+  curl -L https://raw.githubusercontent.com/junegunn/fzf/master/shell/key-bindings.bash > $CC/shell/key-bindings.bash
+  curl -L  https://raw.githubusercontent.com/junegunn/fzf/master/shell/completion.bash > $CC/shell/completion.bash
 fi
 
 if [[ "$(which micro)" == "" ]]; then
@@ -217,7 +216,7 @@ if [[ "$(which micro)" == "" ]]; then
 fi
 
 echo "installing googler"
-curl https://raw.githubusercontent.com/jarun/googler/v4.2/googler -o $CC/.local/bin/googler && chmod a+x $CC/.local/bin/goolger
+curl -L https://raw.githubusercontent.com/jarun/googler/v4.2/googler -o $CC/.local/bin/googler && chmod a+x $CC/.local/bin/googler
 
 echo "installing carbonyl terminal chromium browser"
 curl -L https://github.com/fathyb/carbonyl/releases/download/v0.0.3/carbonyl.$os-amd64.zip | bsdtar -xvf - -C $CC
@@ -258,7 +257,7 @@ echo "$b----------------------------------------------------------------------"
 echo "$(date) - Installation finished successfull (started at: $START_TIME)"
 echo "Please have a look into your .profile"
 echo "and source it with: source .profile"
-echo "Input 'less bash.txt' to see shell help" 
+echo "Input \"less bash.txt\" to see shell help" 
 echo "Use:"
 echo " - htop as taskmananger"
 echo " - <Ctrl+g> to select favorite/previous folder"
