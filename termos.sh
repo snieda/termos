@@ -114,10 +114,10 @@ all=($system $window_manager $file_manager $file_search $file_compress $file_too
     $editors $viewers $network $internet $develop $languages $communication $other )
 
 read -ep "Package Install Command  : " -i "$INST" INST
-read -p  "System upgrade     (Y|n) : " INST_UPGRADE
+read -p  "System upgrade     [Y|n] : " INST_UPGRADE
 read -ep "Install languages        : " -i "$languages" languages
-read -p  "Install python-ext (Y|n) : " INST_PYTHON_EXT
-read -p  "Check Package sizes(y|N) : " CHECK_PACKAGE_SIZES
+read -p  "Install python-ext [Y|n] : " INST_PYTHON_EXT
+read -p  "Check Package sizes[y|N] : " CHECK_PACKAGE_SIZES
 
 echo "${all[@]}"
 
