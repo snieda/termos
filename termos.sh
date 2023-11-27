@@ -93,7 +93,7 @@ else
   INST="$PKG install "
 fi
 
-system="sudo man htop ncurses-base ncurses-bin software-properties-common make fuse"
+system="sudo man htop ncurses-base ncurses-bin ncurses-util software-properties-common make fuse"
 window_manager="tmux"
 file_manager="mc broot"
 file_search="fzy fzf tree locate ripgrep"
