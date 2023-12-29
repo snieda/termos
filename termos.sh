@@ -93,7 +93,7 @@ else
   INST="$PKG install "
 fi
 
-system="sudo man htop ncurses-base ncurses-bin ncurses-util software-properties-common make fuse"
+system="sudo man htop btop ncurses-base ncurses-bin ncurses-util software-properties-common make fuse"
 window_manager="tmux"
 file_manager="mc broot"
 file_search="fzy fzf tree locate ripgrep"
@@ -104,13 +104,18 @@ editors="ne micro vim neovim"
 viewers="bat lesspipe ffmpeg fim colordiff icdiff"
 network="nethogs nmap netcat ncat tcpdump curl wget tinyproxy openssl openssh openvpn"
 internet="w3m w3m-img elinks links2 googler"
-develop="git lazygit podman expect autoexpect progress bar pv gnupg jq"
+develop="git lazygit podman expect autoexpect progress bar pv gnupg jq sqlline"
 languages="nodejs cargo openjdk-17-jdk maven golang-go"
-communication="himalaya weechat poezio iamb"
-other="xclip xcompmgr ntp"
+nvim-plugins="pynvim luarocks composer"
+python-nvim-jupyter="python-full jupyter-client pyperclip cairosvg pnglatex plotly kaleido luajit libmagickwand-dev libgraphicsmagick1-dev"
+communication="himalaya weechat poezio iamb finch"
+media=mp3blaster
+other="xclip xcompmgr ntp tmate"
+
+unpackaged="dasel broot nnn carbonyl cfr"
 
 all=($system $window_manager $file_manager $file_search $file_compress $file_tools $office \
-    $editors $viewers $network $internet $develop $languages $communication $other )
+    $editors $viewers $network $internet $develop $languages $communication $media $other )
 
 read -ep "Package Install Command  : " -i "$INST" INST
 read -p  "System upgrade     [Y|n] : " INST_UPGRADE
@@ -161,7 +166,7 @@ cd $CC
 
 
 for p in $system $window_manager $file_manager $file_search $file_compress $file_tools $office \
-    $editors $viewers $network $internet $develop $communication $other ; do $INST $p || unavailables+=( $p ); done
+    $editors $viewers $network $internet $develop $communication $media $other ; do $INST $p || unavailables+=( $p ); done
 
 b=$(tput bold)
 n=$(tput sgr0)
@@ -177,11 +182,20 @@ curl -L https://www.gnu.org/software/bash/manual/bash.txt > bash.txt
 mkdir -p .local/share/fonts
 
 if [[ "$INST_PYTHON_EXT" != "n" ]]; then
+  VIRTUAL_ENV=~/.config/python3-venv
+  python3 -m venv $VIRTUAL_ENV
+  source $VIRTUAL_ENV/bin/activate
+
   echo "installing python3 extensions"
-  for i in python python-pip python3 python3-pip flake8 autopep8 pudb; do $INST $i; done
+  for i in python python-pip python3 python3-pip flake8 autopep8 debugpy pudb; do $INST $i; done
   for i in python-flake8 python-autopep8 python-pudb; do $INST $i; done #second try...
   pip install -U pip
   pip install flake8 autopep8 pudb # on some distributions, it may be available on pip
+  
+  for i in $python-nvim-jupyter; do $INST $i; done
+  for i in $python-nvim-jupyter; do pip install $i; done
+  for i in $nvim-plugins; do $Inst $i; done
+  for i in $nvim-plugins; do pip install $i; done
 fi
 
 if [ "$PKG" == "pkg" ]; then # mostly freenbsd
@@ -259,12 +273,13 @@ echo "Please have a look into your .profile"
 echo "and source it with: source .profile"
 echo "Input \"less bash.txt\" to see shell help" 
 echo "Use:"
-echo " - htop as taskmananger"
+echo " - btop or htop as taskmananger"
 echo " - <Ctrl+g> to select favorite/previous folder"
 echo " - <Ctrl+h> to select command help"
 echo " - <Ctrl+t> select any file in current folder hierarchy"
 echo " - br or mc as filemanager"
 echo " - micro, ne or vim/nvim as editor"
+echo " - telnet mapscii.me to show a map"
 echo " - googler to search in internet"
 echo " - carbonyl, w3m, links2 or elinks as browser"
 echo " - lvim will provide a full IDE"

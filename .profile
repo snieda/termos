@@ -26,6 +26,9 @@ if [ -d "$HOME/.local/bin" ] ; then
     PATH="$HOME/.local/bin:$PATH"
 fi
 
+# save history after each command (otherwise tmux will do this only on exit)
+PROMPT_COMMAND="history -a; history -c; history -r"
+
 alias x=xdg-open
 alias fd=fdfind
 alias python=python3
@@ -51,19 +54,22 @@ function hh() { cat bash_history | fzy; }
 function fo() { first=$(fzy) && second=$(fzy) && $1 $first $second; }
 function ft() { find . -type f -name $1 -exec sh -c 'less {} | grep --with-filename $2' ; }
 
+python3 -m ~/.config/python3-venv/
+
 export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
 export JDTLS_HOME=~/jdt-ls
 export NNN_PLUG='f:fzcd;h:fzhist;m:mocplay;d:diffs;t:nmount;v:imgview;p:-!less -iR $nnn*;s:-!sudo -E vim $nnn*;l:-!git log;h:-!hx $nnn*;g:-!git diff;r:rg'
 export MVND_HOME=~/mvnd
-
+export VIRTUAL_ENV=~/.config/python3-venv/ 
 export VISUAL=vim
 export EDITOR=micro
 export VIEWER=bat
 export PAGER=bat
 
 source $MVND_HOME/bin/mvnd-bash-completion.bash
+source $VIRTUAL_ENV/bin/activate
 
-PATH="$MVND_HOME/bin:$JAVA_HOME/bin:$JDTLS_HOME/bin:/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin"
+PATH="$MVND_HOME/bin:$JAVA_HOME/bin:$JDTLS_HOME/bin:$VIRTUAL_ENV/bin:$PATH"
 export PATH="$HOME/.cargo/bin:$PATH"
 export PATH="$HOME/.local/bin:$HOME/bin:$PATH"
 CDPATH=.:/workspace
