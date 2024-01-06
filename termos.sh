@@ -181,6 +181,7 @@ curl -L https://www.gnu.org/software/bash/manual/bash.txt > bash.txt
 mkdir -p .local/share/fonts
 
 if [[ "$INST_PYTHON_EXT" != "n" ]]; then
+  $INST python3-venv
   VIRTUAL_ENV=~/.config/python3-venv
   python3 -m venv $VIRTUAL_ENV
   source $VIRTUAL_ENV/bin/activate
