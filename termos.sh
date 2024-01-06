@@ -102,12 +102,12 @@ file_tools="cifs-utils inotify-tools sshfs dos2unix poppler-utils"
 office="docx2txt xlsx2csv xls2csv catdoc pandoc mupdf antiword printer-driver-cups-pdf"
 editors="ne micro vim neovim"
 viewers="bat lesspipe ffmpeg fim colordiff icdiff"
-network="nethogs nmap netcat ncat tcpdump curl wget tinyproxy openssl openssh openvpn"
+network="telnet net-tools nethogs nmap netcat ncat tcpdump curl wget tinyproxy openssl openssh openvpn"
 internet="w3m w3m-img elinks links2 googler"
 develop="git lazygit podman expect autoexpect progress bar pv gnupg jq sqlline"
 languages="nodejs cargo openjdk-17-jdk maven golang-go"
-nvim-plugins="pynvim luarocks composer"
-python-nvim-jupyter="python-full jupyter-client pyperclip cairosvg pnglatex plotly kaleido luajit libmagickwand-dev libgraphicsmagick1-dev"
+nvim_plugins="pynvim luarocks composer"
+python_nvim_jupyter="python-full jupyter-client pyperclip cairosvg pnglatex plotly kaleido luajit libmagickwand-dev libgraphicsmagick1-dev"
 communication="himalaya weechat poezio iamb finch"
 media=mp3blaster
 other="xclip xcompmgr ntp tmate"
@@ -192,10 +192,10 @@ if [[ "$INST_PYTHON_EXT" != "n" ]]; then
   pip install -U pip
   pip install flake8 autopep8 pudb # on some distributions, it may be available on pip
   
-  for i in $python-nvim-jupyter; do $INST $i; done
-  for i in $python-nvim-jupyter; do pip install $i; done
-  for i in $nvim-plugins; do $Inst $i; done
-  for i in $nvim-plugins; do pip install $i; done
+  for i in $python_nvim_jupyter; do $INST $i; done
+  for i in $python_nvim_jupyter; do pip install $i; done
+  for i in $nvim_plugins; do $Inst $i; done
+  for i in $nvim_plugins; do pip install $i; done
 fi
 
 if [ "$PKG" == "pkg" ]; then # mostly freenbsd
