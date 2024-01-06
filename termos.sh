@@ -114,14 +114,14 @@ other="xclip xcompmgr ntp tmate"
 
 unpackaged="dasel broot nnn carbonyl cfr"
 
-all=($system $window_manager $file_manager $file_search $file_compress $file_tools $office \
-    $editors $viewers $network $internet $develop $languages $communication $media $other )
-
 read -ep "Package Install Command  : " -i "$INST" INST
 read -p  "System upgrade     [Y|n] : " INST_UPGRADE
 read -ep "Install languages        : " -i "$languages" languages
 read -p  "Install python-ext [Y|n] : " INST_PYTHON_EXT
 read -p  "Check Package sizes[y|N] : " CHECK_PACKAGE_SIZES
+
+all=($system $window_manager $file_manager $file_search $file_compress $file_tools $office \
+    $editors $viewers $network $internet $languages $develop $nvim_plugins $communication $media $other )
 
 echo "${all[@]}"
 
@@ -165,8 +165,7 @@ cd .config/termos && cp -ru $(ls -A -I README.MD -I LICENSE -I .git) $CC
 cd $CC
 
 
-for p in $system $window_manager $file_manager $file_search $file_compress $file_tools $office \
-    $editors $viewers $network $internet $develop $communication $media $other ; do $INST $p || unavailables+=( $p ); done
+for p in $all ; do $INST $p || unavailables+=( $p ); done
 
 b=$(tput bold)
 n=$(tput sgr0)
