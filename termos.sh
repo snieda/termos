@@ -176,6 +176,11 @@ echo "alias ll='ls -alF'" >> .profile
 # additional terminal tools
 # ----------------------------------------------------
 
+# dasel as data selector for json/yaml/xml
+if [[ "$(which go)" != "" ]]; then
+  go install github.com/tomwright/dasel/v2/cmd/dasel@master
+fi
+
 curl -L https://www.gnu.org/software/bash/manual/bash.txt > bash.txt
 
 mkdir -p .local/share/fonts
