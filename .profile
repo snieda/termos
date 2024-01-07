@@ -45,8 +45,11 @@ export LESSCLOSE="/usr/bin/lesspipe %s %s";
 #export CDPATH=.
 #cd_() { cd $@; [[ "$CDPATH" != *"$(pwd)"* ]] && (export CDPATH=$CDPATH:$(pwd); echo "CDPATH=$CDPATH" >> ~/.profile; ) }
 #alias exit="echo $CDPATH >> ~/profile; exit;"
+alias gg='elinks https://www.google.com/search?q=$(read -ep "Search in Google: "; echo $REPLY)'
+
 bind -x '"\C-g":"read f < <(tree -idf ~ | fzy -l 30) | xsel -i && echo -en "\033[2K \e[5n $(xsel -o)"'
 bind -x '"\C-h":"{ apropos . ; [ -f ~/bash.txt ] && cat bash.txt; } | fzy"'
+bind -x '"\C-i":"gg"'
 
 #command -v __git_ps1 >/dev/null 2>&1 && export PS1="$PS1\n\[\033[1;34m\]└─ ▶$(__git_ps1):\[\033[0m\]"
 function ff() { find . -name $2 | fzy | xargs $1; }
