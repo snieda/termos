@@ -34,6 +34,8 @@ lvim.plugins = {
   {'declancm/maximize.nvim'},
   {'skywind3000/asyncrun.vim'},
   {'wfxr/minimap.vim'},
+  {'wellle/context.vim'},
+  {'SmiteshP/nvim-navic'},
 --  {'echasnovski/mini.nvim', version = '*' },
     {
         "benlubas/molten-nvim",
@@ -93,6 +95,10 @@ vim.api.nvim_set_keymap('n', "<C-q>", "<cmd>qa!<cr>", { noremap = true, silent =
 vim.api.nvim_set_keymap('n', "<C-s>", "<cmd>w<cr>", { noremap = true, silent = true, desc = "Save File"})
 vim.api.nvim_set_keymap('n', "<C-n>", "<cmd>new<cr>", { noremap = true, silent = true, desc = "New Buffer"})
 vim.api.nvim_set_keymap('n', "<C-x>", "<cmd>bd<cr>", { noremap = true, silent = true, desc = "Close Buffer"})
+vim.api.nvim_set_keymap('n', "<C-m>", "<cmd>tabedit %<cr>", { noremap = true, silent = true, desc = "Maximize Current Window"})
+vim.api.nvim_set_keymap('n', "<S-m>", "<cmd>tabclose<cr>", { noremap = true, silent = true, desc = "Restore Windows after Maximize"})
+vim.api.nvim_set_keymap('n', "<Tab>", "<cmd>BufferLineCycleNext<cr>", { noremap = true, silent = true, desc = "Goto Next File Buffer"})
+vim.api.nvim_set_keymap('n', "<S-Tab>", "<cmd>BufferLineCyclePrev<cr>", { noremap = true, silent = true, desc = "Goto Next File Buffer"})
 vim.api.nvim_set_keymap('n', "<F3>", "<cmd>lua vim.lsp.buf.definition()<cr>", { noremap = true, silent = true, desc = "Goto Definition"})
 vim.api.nvim_set_keymap('n', "<F5>", "<cmd>lua require'dap'.step_into()<cr>", { noremap = true, silent = true, desc = "Debug: Step Into"})
 vim.api.nvim_set_keymap('n', "<F6>", "<cmd>lua require'dap'.step_over()<cr>", { noremap = true, silent = true, desc = "Debug: Step Over"})

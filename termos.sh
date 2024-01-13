@@ -195,7 +195,7 @@ if [[ "$INST_PYTHON_EXT" != "n" ]]; then
   for i in python python-pip python3 python3-pip flake8 autopep8 debugpy pudb; do $INST $i; done
   for i in python-flake8 python-autopep8 python-pudb; do $INST $i; done #second try...
   pip install -U pip
-  pip install flake8 autopep8 pudb # on some distributions, it may be available on pip
+  pip install pyright flake8 autopep8 pudb # on some distributions, it may be available on pip
   
   for i in $python_nvim_jupyter; do $INST $i; done
   for i in $python_nvim_jupyter; do pip install $i; done
@@ -238,7 +238,8 @@ echo "installing googler"
 curl -L https://raw.githubusercontent.com/jarun/googler/v4.2/googler -o $CC/.local/bin/googler && chmod a+x $CC/.local/bin/googler
 
 echo "installing carbonyl terminal chromium browser"
-curl -L https://github.com/fathyb/carbonyl/releases/download/v0.0.3/carbonyl.$os-amd64.zip | bsdtar -xvf - -C $CC
+# curl -L https://github.com/fathyb/carbonyl/releases/download/v0.0.3/carbonyl.$os-amd64.zip | bsdtar -xvf - -C $CC
+curl -L https://github.com/fathyb/carbonyl/releases/download/v0.0.3/carbonyl.$os-amd64.zip -o carbonyl.zip; unzip carbonyl.zip -d $CC; rm carbonyl.zip
 chmod +x $CC/carbonyl-0.0.3/carbonyl
 
 curl https://www.benf.org/other/cfr/cfr-0.152.jar > $CC/.local/bin/cfr-0.152.jar
@@ -264,6 +265,8 @@ if [ "$(which lvim)" == "" ]; then
   fi
   echo "install lunarvim"
   LV_BRANCH='release-1.3/neovim-0.9' bash <(curl -s https://raw.githubusercontent.com/LunarVim/LunarVim/release-1.3/neovim-0.9/utils/installer/install.sh)
+  lvim --headless +"LspInstall jdtls" +qa
+  lvim --headless +"LspInstall pyright" +qa
 fi
 
 # reload profile
@@ -275,12 +278,13 @@ source .profile
 echo "$b----------------------------------------------------------------------"
 echo "$(date) - Installation finished successfull (started at: $START_TIME)"
 echo "Please have a look into your .profile"
-echo "and source it with: source .profile"
+echo "and source it with: source ~/.profile"
 echo "Input \"less bash.txt\" to see shell help" 
 echo "Use:"
 echo " - btop or htop as taskmananger"
 echo " - <Ctrl+g> to select favorite/previous folder"
 echo " - <Ctrl+h> to select command help"
+ehco " - <Ctrl+i> for internet search (google)"
 echo " - <Ctrl+t> select any file in current folder hierarchy"
 echo " - br or mc as filemanager"
 echo " - micro, ne or vim/nvim as editor"
