@@ -145,7 +145,7 @@ if [ "$START" == "n" ]; then
 fi
 
 if [ "$PKG" == "apt" ]; then
-echo "add repositories for neovim"
+  $SUDO $PKG update
   $INST software-properties-common
   sudo add-apt-repository ppa:neovim-ppa/stable
 fi
@@ -256,6 +256,24 @@ if [ ! -f $CC/.ssh/id_rsa.pub ]; then
 	echo "prepare ssh key to be copied to server machines"
 	echo -e "\n\n\n" | ssh-keygen -t rsa
 	cat $CC/.ssh/id_rsa.pub | xclip -sel clip
+
+  export GNUPGHOME="$(mktemp -d)"
+  cat >gpg-input <<EOF
+     %echo Generating a default key
+     Key-Type: default
+     Subkey-Type: default
+     Name-Real: Joe Tester
+     Name-Comment: with stupid passphrase
+     Name-Email: joe@foo.bar
+     Expire-Date: 0
+     Passphrase: abc
+     # Do a commit here, so that we can later print "done" :-)
+     %commit
+     %echo done
+EOF
+  gpg --batch --generate-key gpg-input
+  gpg --list-secret-keys
+
 fi
 
 if [ "$(which lvim)" == "" ]; then
@@ -284,11 +302,12 @@ echo "Use:"
 echo " - btop or htop as taskmananger"
 echo " - <Ctrl+g> to select favorite/previous folder"
 echo " - <Ctrl+h> to select command help"
-ehco " - <Ctrl+i> for internet search (google)"
+ehco " - <Ctrl+j> for internet search (google)"
 echo " - <Ctrl+t> select any file in current folder hierarchy"
 echo " - br or mc as filemanager"
 echo " - micro, ne or vim/nvim as editor"
 echo " - telnet mapscii.me to show a map"
+echo " - dasel for data selection (json, yaml, xml, ...)"
 echo " - googler to search in internet"
 echo " - carbonyl, w3m, links2 or elinks as browser"
 echo " - lvim will provide a full IDE"
