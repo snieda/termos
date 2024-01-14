@@ -116,6 +116,7 @@ unpackaged="dasel broot nnn carbonyl cfr"
 
 read -ep "Package Install Command  : " -i "$INST" INST
 read -p  "System upgrade     [Y|n] : " INST_UPGRADE
+read -p  "Override all       [y|N] : " INST_OVERRIDE
 read -ep "Install languages        : " -i "$languages" languages
 read -p  "Install python-ext [Y|n] : " INST_PYTHON_EXT
 read -p  "Check Package sizes[y|N] : " CHECK_PACKAGE_SIZES
@@ -160,6 +161,7 @@ mkdir -p .local/bin
 
 $INST git
 git clone https://github.com/snieda/termos.git .config/termos
+git -C .config/termos pull 
 echo "copying termos configurations"
 cd .config/termos && cp -ru $(ls -A -I README.MD -I LICENSE -I .git) $CC
 cd $CC
@@ -218,7 +220,7 @@ curl -L https://github.com/jarun/nnn/releases/download/v4.2/nnn-nerd-static-4.2.
 curl -L https://dystroy.org/broot/download/$ARCH-$os/broot -o $CC/.local/bin/broot && chmod a+x $CC/.local/bin/broot
 curl -L https://github.com/Canop/broot/raw/master/resources/icons/vscode/vscode.ttf > $CC/.local/share/fonts/vscode.ttf
 
-if [[ ! -f "$CC/shell/completion.bash" ]]; then
+if [[ ! -f "$CC/shell/completion.bash" ]] || [[ $INST_OVERRIDE != "n" ]]; then
   echo "installing Fuzzy Finder"
   wget -nc https://github.com/junegunn/fzf/raw/master/install
   mv install fzf-install.sh
@@ -229,7 +231,7 @@ if [[ ! -f "$CC/shell/completion.bash" ]]; then
   curl -L  https://raw.githubusercontent.com/junegunn/fzf/master/shell/completion.bash > $CC/shell/completion.bash
 fi
 
-if [[ "$(which micro)" == "" ]]; then
+if [[ "$(which micro)" == "" ]] || [[ $INST_OVERRIDE != "n" ]]; then
   echo "installing micro editor"
   micro -plugin install aspell editorconfig filemanager fish fzf jump lsp  quickfix wc autoclose comment diff ftoptions linter literate status
 fi
@@ -276,7 +278,7 @@ EOF
 
 fi
 
-if [ "$(which lvim)" == "" ]; then
+if [ "$(which lvim)" == "" ] || [[ $INST_OVERRIDE != "n" ]]; then
   if [ $(echo "$(nvim -v | sed -nE 's/.* v([0-9]+\.[0-9]+).*/\1/p') < 0.9" | bc -l) -eq 1 ]; then
     curl -sL https://github.com/neovim/neovim/releases/latest/download/nvim-linux64.tar.gz | tar xzfv - -C $CC/.local/bin
     ln -s $CC/.local/bin/nvim-linux64/bin/nvim $CC/.local/bin/nvim
@@ -302,8 +304,8 @@ echo "Use:"
 echo " - btop or htop as taskmananger"
 echo " - <Ctrl+g> to select favorite/previous folder"
 echo " - <Ctrl+h> to select command help"
-ehco " - <Ctrl+j> for internet search (google)"
 echo " - <Ctrl+t> select any file in current folder hierarchy"
+echo " - <Ctrl+k> for internet search (google)"
 echo " - br or mc as filemanager"
 echo " - micro, ne or vim/nvim as editor"
 echo " - telnet mapscii.me to show a map"
