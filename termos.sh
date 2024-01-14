@@ -289,6 +289,13 @@ if [ "$(which lvim)" == "" ] || [[ $INST_OVERRIDE == "y" ]]; then
   lvim --headless +"LspInstall pyright" +qa
 fi
 
+echo "Cleanup System"
+sudo apt autoremove
+sudo rm -rf /tmp/*
+rm -rf $CC/.cache/*
+rm -rf $CC/.rustup/download/*
+df -h
+
 # reload profile
 cd $CC
 source .profile
