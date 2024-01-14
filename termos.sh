@@ -220,7 +220,7 @@ curl -L https://github.com/jarun/nnn/releases/download/v4.2/nnn-nerd-static-4.2.
 curl -L https://dystroy.org/broot/download/$ARCH-$os/broot -o $CC/.local/bin/broot && chmod a+x $CC/.local/bin/broot
 curl -L https://github.com/Canop/broot/raw/master/resources/icons/vscode/vscode.ttf > $CC/.local/share/fonts/vscode.ttf
 
-if [[ ! -f "$CC/shell/completion.bash" ]] || [[ $INST_OVERRIDE != "n" ]]; then
+if [[ ! -f "$CC/shell/completion.bash" ]] || [[ $INST_OVERRIDE == "y" ]]; then
   echo "installing Fuzzy Finder"
   wget -nc https://github.com/junegunn/fzf/raw/master/install
   mv install fzf-install.sh
@@ -231,7 +231,7 @@ if [[ ! -f "$CC/shell/completion.bash" ]] || [[ $INST_OVERRIDE != "n" ]]; then
   curl -L  https://raw.githubusercontent.com/junegunn/fzf/master/shell/completion.bash > $CC/shell/completion.bash
 fi
 
-if [[ "$(which micro)" == "" ]] || [[ $INST_OVERRIDE != "n" ]]; then
+if [[ "$(which micro)" == "" ]] || [[ $INST_OVERRIDE == "y" ]]; then
   echo "installing micro editor"
   micro -plugin install aspell editorconfig filemanager fish fzf jump lsp  quickfix wc autoclose comment diff ftoptions linter literate status
 fi
@@ -278,7 +278,7 @@ EOF
 
 fi
 
-if [ "$(which lvim)" == "" ] || [[ $INST_OVERRIDE != "n" ]]; then
+if [ "$(which lvim)" == "" ] || [[ $INST_OVERRIDE == "y" ]]; then
   if [ $(echo "$(nvim -v | sed -nE 's/.* v([0-9]+\.[0-9]+).*/\1/p') < 0.9" | bc -l) -eq 1 ]; then
     curl -sL https://github.com/neovim/neovim/releases/latest/download/nvim-linux64.tar.gz | tar xzfv - -C $CC/.local/bin
     ln -s $CC/.local/bin/nvim-linux64/bin/nvim $CC/.local/bin/nvim
