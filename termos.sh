@@ -8,6 +8,7 @@ cat <<EOM
 # annotation   : on FreeBSD the bash is on: /usr/local/bin/bash
 # tested on    : ubuntu, ghostbsd(freebsd), termux, msys2
 #
+# script start : source termos.sh [-y (=batch modus)]
 # usage (on new system, e.g: docker run -it --rm bitnami/minideb):
 #  - apt update
 #  - apt install sudo
@@ -55,6 +56,7 @@ echo "User   : $(id)"
 echo "Dir    : $(pwd)"
 echo -------------------------------------------------------
 echo
+BATCH_MODE="$1"
 ARCH=$(uname -m)
 Os=$(uname -s)
 os=${Os,,}
@@ -64,7 +66,16 @@ START_TIME=$(date)
 b=$(tput bold)
 n=$(tput sgr0)
 
-read -ep "Installer [apt,pacman,pkg,apk,dnf,yum,yast,zypper,snap,brew,port,scoop,apt-cyg]: " -i "apt" PKG
+PKG=apt
+INST="$SUDO $PKG install -y --ignore-missing $*"
+INST_UPGRADE=n
+INST_OVERRIDE=n
+INST_PYTHON_EXT=y
+CHECK_PACKAGE_SIZES=n
+
+if [ "$BATCH_MODE" != "y" ]; then
+  read -ep "Installer [apt,pacman,pkg,apk,dnf,yum,yast,zypper,snap,brew,port,scoop,apt-cyg]: " -i "apt" PKG
+fi
 
 if [ "$UID" == "0" ]; then # only on root priviledge
 	$PKG install sudo > /dev/null #on minimized systems no sudo is available - you have to be root to install it!
@@ -75,22 +86,24 @@ if [ "$?" == "0" ]; then
 fi
 echo
 
-if [ "$PKG" == "apt" ];then #debian
-	INST="$SUDO $PKG install -y --ignore-missing $*"
-elif [ "$PKG" == "pacman" ];then #arch, msys2 (windows/cygwin)
-	INST="$SUDO $PKG -S --noconfirm $*"
-elif [ "$PKG" == "pkg" ];then #freebsd
-	INST="$SUDO $PKG install -y --ignore-missing $*"
-elif [ "$PKG" == "apk" ];then #alpine linux
-	INST="$SUDO $PKG add $*"
-elif [ "$PKG" == "yum" ];then #fedora
-	INST="$SUDO $PKG install -y --skip-broken --tolerant $*"
-elif [ "$PKG" == "yast" ];then #SUSE (old)
-	INST="$SUDO $PKG --install $*"
-elif [ "$PKG" == "zypper" ];then #openSUSE
-	INST="$SUDO $PKG install --non-interactive --ignore-unknown --no-cd --auto-agree-with-licenses --allow-unsigned-rpm  $*"
-else
-  INST="$PKG install "
+if [ "$BATCH_MODE" != "y" ]; then
+  if [ "$PKG" == "apt" ];then #debian
+    INST="$SUDO $PKG install -y --ignore-missing $*"
+  elif [ "$PKG" == "pacman" ];then #arch, msys2 (windows/cygwin)
+    INST="$SUDO $PKG -S --noconfirm $*"
+  elif [ "$PKG" == "pkg" ];then #freebsd
+    INST="$SUDO $PKG install -y --ignore-missing $*"
+  elif [ "$PKG" == "apk" ];then #alpine linux
+    INST="$SUDO $PKG add $*"
+  elif [ "$PKG" == "yum" ];then #fedora
+    INST="$SUDO $PKG install -y --skip-broken --tolerant $*"
+  elif [ "$PKG" == "yast" ];then #SUSE (old)
+    INST="$SUDO $PKG --install $*"
+  elif [ "$PKG" == "zypper" ];then #openSUSE
+    INST="$SUDO $PKG install --non-interactive --ignore-unknown --no-cd --auto-agree-with-licenses --allow-unsigned-rpm  $*"
+  else
+    INST="$PKG install "
+  fi
 fi
 
 system="sudo man htop btop ncurses-base ncurses-bin ncurses-util software-properties-common make fuse"
@@ -114,12 +127,14 @@ other="xclip xcompmgr ntp tmate"
 
 unpackaged="dasel broot nnn carbonyl cfr"
 
-read -ep "Package Install Command  : " -i "$INST" INST
-read -p  "System upgrade     [Y|n] : " INST_UPGRADE
-read -p  "Override all       [y|N] : " INST_OVERRIDE
-read -ep "Install languages        : " -i "$languages" languages
-read -p  "Install python-ext [Y|n] : " INST_PYTHON_EXT
-read -p  "Check Package sizes[y|N] : " CHECK_PACKAGE_SIZES
+if [ "$BATCH_MODE" != "y" ]; then
+  read -ep "Package Install Command  : " -i "$INST" INST
+  read -p  "System upgrade     [Y|n] : " INST_UPGRADE
+  read -p  "Override all       [y|N] : " INST_OVERRIDE
+  read -ep "Install languages        : " -i "$languages" languages
+  read -p  "Install python-ext [Y|n] : " INST_PYTHON_EXT
+  read -p  "Check Package sizes[y|N] : " CHECK_PACKAGE_SIZES
+fi
 
 all=($system $window_manager $file_manager $file_search $file_compress $file_tools $office \
     $editors $viewers $network $internet $languages $develop $nvim_plugins $communication $media $other )
@@ -139,10 +154,11 @@ if [ "$CHECK_PACKAGE_SIZES" == "y" ]; then
 	$SHOW_DISK_SPACE ${all[@]} | grep -E "Package:|Installed-Size:"
 fi
 
-read -p  ">>>>>> !!! START INSTALLATION ? <<<<<<  (Y|n)  : " START
-
-if [ "$START" == "n" ]; then
-	exit
+if [ "$BATCH_MODE" != "y" ]; then
+  read -p  ">>>>>> !!! START INSTALLATION ? <<<<<<  (Y|n)  : " START
+  if [ "$START" == "n" ]; then
+    exit
+  fi
 fi
 
 if [ "$PKG" == "apt" ]; then
