@@ -75,6 +75,9 @@ CHECK_PACKAGE_SIZES=n
 
 if [ "$BATCH_MODE" != "y" ]; then
   read -ep "Installer [apt,pacman,pkg,apk,dnf,yum,yast,zypper,snap,brew,port,scoop,apt-cyg]: " -i "apt" PKG
+  if [ "$HOME" != "$CC" ]; then
+    echo "WARNING: HOME (=$HOME) and PWD (=$CC) differ! Perhaps you should call 'export HOME=$(pwd)' or change the current directory?"
+  fi
 fi
 
 if [ "$UID" == "0" ]; then # only on root priviledge
@@ -300,7 +303,7 @@ if [ "$(which lvim)" == "" ] || [[ $INST_OVERRIDE == "y" ]]; then
     ln -s $CC/.local/bin/nvim-linux64/bin/nvim $CC/.local/bin/nvim
   fi
   echo "install lunarvim"
-  LV_BRANCH='release-1.3/neovim-0.9' bash <(curl -s https://raw.githubusercontent.com/LunarVim/LunarVim/release-1.3/neovim-0.9/utils/installer/install.sh)
+  echo -e "y\ny\ny\n" | LV_BRANCH='release-1.3/neovim-0.9' bash <(curl -s https://raw.githubusercontent.com/LunarVim/LunarVim/release-1.3/neovim-0.9/utils/installer/install.sh)
   lvim --headless +"LspInstall jdtls" +qa
   lvim --headless +"LspInstall pyright" +qa
 fi
@@ -314,6 +317,7 @@ df -h
 
 # reload profile
 cd $CC
+HOME=$CC
 source .profile
 
 [[ ${#unavailables[@]} > 0 ]] && echo "\nWARNING: couldn't install the following packages:\n\t${unavailables[@]}"
